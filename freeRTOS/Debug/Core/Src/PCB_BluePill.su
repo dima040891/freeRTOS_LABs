@@ -1,0 +1,2 @@
+PCB_BluePill.c:7:6:PCB_Init	8	static
+PCB_BluePill.c:12:6:PCB_LED_Toggle	8	static
