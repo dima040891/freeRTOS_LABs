@@ -26,9 +26,9 @@ void vTask_PCB_LED_Toggle(void *pvParameters)
 	for(;;)
 	{
 	PCB_LED_Toggle();
-	vTaskDelay(250);
+	vTaskDelay(500);
 	PCB_LED_Toggle();
-	vTaskDelay(250);
+	vTaskDelay(500);
 	}
 }
 
