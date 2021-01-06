@@ -1,2 +1,2 @@
-freeRTOS_tasks.c:15:6:freeRTOS_Tasks_Ini	16	static
-freeRTOS_tasks.c:23:6:vTask_PCB_LED_Toggle	16	static
+freeRTOS_tasks.c:18:6:freeRTOS_Tasks_Ini	16	static
+freeRTOS_tasks.c:29:6:vTask_PCB_LED_Toggle	24	static
