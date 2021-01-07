@@ -1,4 +1,5 @@
-freeRTOS_tasks.c:32:6:freeRTOS_Tasks_Ini	16	static
-freeRTOS_tasks.c:44:6:vTask_Transmit_VCP	24	static
-freeRTOS_tasks.c:56:6:vTask_USB_Init	32	static
-freeRTOS_tasks.c:86:6:vTask_PCB_LED_Toggle	24	static
+freeRTOS_tasks.c:33:6:freeRTOS_Tasks_Ini	16	static
+freeRTOS_tasks.c:45:6:vTask_Transmit_VCP_2	24	static
+freeRTOS_tasks.c:59:6:vTask_Transmit_VCP	24	static
+freeRTOS_tasks.c:71:6:vTask_USB_Init	32	static
+freeRTOS_tasks.c:101:6:vTask_PCB_LED_Toggle	24	static

@@ -24,4 +24,6 @@ void vTask_USB_Init(void *pvParameters); // З-а сброса лнии D+ по�
 
 void vTask_Transmit_VCP(void *pvParameters); // З-а переиодческой отправки сообщения в VCP. Задача должна быть запущена после удаления vTask_USB_Init.
 
+void vTask_Transmit_VCP_2(void *pvParameters);
+
 #endif /* INC_FREERTOS_TASKS_H_ */
