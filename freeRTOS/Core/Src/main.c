@@ -31,7 +31,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-char USB_Tx_Buf[24]; // Буфер для передачи в ПК.
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -235,19 +235,13 @@ void StartDefaultTask(void *argument)
   //MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 5 */
 
-	sprintf(USB_Tx_Buf, "Hi from VCP\r\n");
-
-
-
   PCB_Init();
   freeRTOS_Tasks_Ini();
 
   /* Infinite loop */
   for(;;)
   {
-	  CDC_Transmit_FS((unsigned char*)USB_Tx_Buf, strlen(USB_Tx_Buf));
-	  osDelay(500);
-
+osDelay(1);
   }
   /* USER CODE END 5 */
 }

@@ -27,18 +27,31 @@ uint16_t Delay_LED; // Задержка (1/2 периода) мигания LED.
 const uint16_t *pDelay_LED; // Указатель на Delay_LED для передачи как параметра задачи. const обеспечивает запись во flash (не в стеке). В оригинальном примере
 // еще добавлен static
 
+char USB_Tx_Buf[24]; // Буфер для передачи в ПК.
+
 void freeRTOS_Tasks_Ini (void)
 {
 
-	xTaskCreate(vTask_USB_Init, "Task_USB_Init", 400, NULL, 2, NULL);
+	xTaskCreate(vTask_USB_Init, "Task_USB_Init", 100, NULL, 2, NULL); // З-а сброса лнии D+ после каждого запуска МК. Необхадимо для определения устройсва на шине USB.
+	xTaskCreate(vTask_Transmit_VCP, "Task_Transmit_VCP", 100, NULL, 1, NULL); // З-а переиодческой отправки сообщения в VCP. Задача должна быть запущена после удаления vTask_USB_Init.
 
 	Delay_LED = 500;
 	pDelay_LED = &Delay_LED;
-
-	xTaskCreate(vTask_PCB_LED_Toggle, "Task_PCB_LED_Toggle", 40, (void*) pDelay_LED, 1, NULL); // Задача минания LED
+	xTaskCreate(vTask_PCB_LED_Toggle, "Task_PCB_LED_Toggle", 40, (void*) pDelay_LED, 1, NULL); // З-а мигания LED
 
 }
 
+void vTask_Transmit_VCP(void *pvParameters)
+{
+	sprintf(USB_Tx_Buf, "Hi from VCP\r\n");
+
+	for(;;)
+	{
+		CDC_Transmit_FS((unsigned char*)USB_Tx_Buf, strlen(USB_Tx_Buf));
+		vTaskDelay(500);
+	}
+
+}
 
 void vTask_USB_Init(void *pvParameters)
 {
@@ -78,7 +91,7 @@ void vTask_PCB_LED_Toggle(void *pvParameters)
 	for(;;)
 	{
 	PCB_LED_Toggle();
-	vTaskDelay(*pDelay_LED); // Разыменование т.е. передача значения
+	vTaskDelay(*pDelay_LED); // Разыменование т.е. передача значения задержки
 	PCB_LED_Toggle();
 	vTaskDelay(*(uint16_t*)pvParameters); // Можно и без промежуточных переменных, привести pvParameters к указателю uint16_t "(uint16_t*)pvParameters", а затем разименовать
 	}
