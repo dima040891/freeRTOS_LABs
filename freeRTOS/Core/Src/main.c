@@ -237,23 +237,7 @@ void StartDefaultTask(void *argument)
 
 	sprintf(USB_Tx_Buf, "Hi from VCP\r\n");
 
-	//-------------------------------------------------------------------------------------------------------------------
-	/* Кратковременный перевод GPIOA_12 на выход с записью в него лог. 0 + задержка. Необхадимо для определения USB устройсва после
-	 перепрошивки/сброса МК. Не забыть закмментить родной вызов MX_USB_DEVICE_Init();  после каждой генерации STM32IDE.*/
 
-	  GPIO_InitTypeDef GPIO_InitStruct = {0};
-	  GPIO_InitStruct.Pin = GPIO_PIN_12;
-	  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	  GPIO_InitStruct.Pull = GPIO_NOPULL;
-	  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_RESET); // Запись 0, притянуть D+ к земле.
-
-	  osDelay(2000);
-
-	  MX_USB_DEVICE_Init(); // Инициализация USB микроконтроллераа
-
-	  //-------------------------------------------------------------------------------------------------------------------
 
   PCB_Init();
   freeRTOS_Tasks_Ini();
@@ -261,11 +245,9 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-//	  PCB_LED_Toggle();
 	  CDC_Transmit_FS((unsigned char*)USB_Tx_Buf, strlen(USB_Tx_Buf));
 	  osDelay(500);
-//	  PCB_LED_Toggle();
-//	  osDelay(500);
+
   }
   /* USER CODE END 5 */
 }

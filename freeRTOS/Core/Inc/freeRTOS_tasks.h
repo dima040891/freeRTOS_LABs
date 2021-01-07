@@ -18,9 +18,8 @@
 
 void freeRTOS_Tasks_Ini (void); // Функция создания задач freeRTOS. Задачи создаются из задачи idle task на запущенном планировщике.
 
-void vTask_PCB_LED_Toggle(void *pvParameters); // Ф-я мигания индикаторного светодиода.
+void vTask_PCB_LED_Toggle(void *pvParameters); // З-а мигания индикаторного светодиода.
 
-
-
+void vTask_USB_Init(void *pvParameters); // З-а сброса лнии D+ после каждого запуска МК. Необхадимо для определения устройсва на шине USB.
 
 #endif /* INC_FREERTOS_TASKS_H_ */
