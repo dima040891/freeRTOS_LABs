@@ -28,18 +28,19 @@ const uint16_t *pDelay_LED; // Указатель на Delay_LED для пере
 // еще добавлен static
 
 char USB_Tx_Buf_Task1[24]; // Буфер для передачи в ПК.
-const char *USB_Tx_Buf_Task2 = "Task2 Hello!\r\n";
+const char *USB_Tx_Buf_Task2 = "Task2 send\r\n";
 
 void freeRTOS_Tasks_Ini (void)
 {
 	xTaskCreate(vTask_USB_Init, "Task_USB_Init", 100, NULL, 2, NULL); // З-а сброса лнии D+ после каждого запуска МК. Необхадимо для определения устройсва на шине USB.
 	xTaskCreate(vTask_Transmit_VCP, "Task_Transmit_VCP", 120, NULL, 1, NULL); // З-а переиодческой отправки сообщения в VCP. Задача должна быть запущена после удаления vTask_USB_Init.
+	xTaskCreate(vTask_Transmit_VCP_2, "Task_Transmit_VCP_2", 120, (void*) USB_Tx_Buf_Task2, 1, NULL); // Вывод второго тестового сообщения
 
 	Delay_LED = 500;
 	pDelay_LED = &Delay_LED;
 	xTaskCreate(vTask_PCB_LED_Toggle, "Task_PCB_LED_Toggle", 40, (void*) pDelay_LED, 1, NULL); // З-а мигания LED
 
-	xTaskCreate(vTask_Transmit_VCP_2, "Task_Transmit_VCP_2", 120, (void*) USB_Tx_Buf_Task2, 1, NULL); // Вывод второго тестового сообщения
+
 }
 
 void vTask_Transmit_VCP_2(void *pvParameters)
@@ -50,20 +51,21 @@ void vTask_Transmit_VCP_2(void *pvParameters)
 
 	for(;;)
 	{
-		CDC_Transmit_FS((unsigned char*)vTask2_Name, strlen(vTask2_Name));
-		vTaskDelay(500);
+		while (CDC_Transmit_FS((unsigned char*)vTask2_Name, strlen(vTask2_Name))); // Пытаться послать данные до тех пор USB не будет готов к передаче очерендной посылки.
+			//скорее всего ф-я CDC_Transmit_FS() проверяет свобдны ли аппаратные ресурсы МК к передаче по USB. Если нет, то сразу выходит из функции с ошибкой.
+		vTaskDelay(500 / portTICK_RATE_MS );
 	}
 	vTaskDelete(NULL);
 }
 
 void vTask_Transmit_VCP(void *pvParameters)
 {
-	sprintf(USB_Tx_Buf_Task1, "Hi from VCP\r\n");
+	sprintf(USB_Tx_Buf_Task1, "Task1 send\r\n");
 
 	for(;;)
 	{
-		CDC_Transmit_FS((unsigned char*)USB_Tx_Buf_Task1, strlen(USB_Tx_Buf_Task1));
-		vTaskDelay(500);
+		while(CDC_Transmit_FS((unsigned char*)USB_Tx_Buf_Task1, strlen(USB_Tx_Buf_Task1))); // // Пытаться послать данные до тех пор USB не будет готов к передаче очерендной посылки.
+		vTaskDelay(500 / portTICK_RATE_MS );
 	}
 
 }
@@ -84,7 +86,7 @@ void vTask_USB_Init(void *pvParameters)
 	  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_12, GPIO_PIN_RESET); // Запись 0, притянуть D+ к земле.
 
-	  vTaskDelay(2000);
+	  vTaskDelay(2000 / portTICK_RATE_MS );
 
 	  MX_USB_DEVICE_Init(); // Инициализация USB микроконтроллераа
 
@@ -92,7 +94,7 @@ void vTask_USB_Init(void *pvParameters)
 
 	for(;;)
 	{
-		vTaskDelay(1000);
+		vTaskDelay(1000 / portTICK_RATE_MS );
 	}
 
 
@@ -106,9 +108,9 @@ void vTask_PCB_LED_Toggle(void *pvParameters)
 	for(;;)
 	{
 	PCB_LED_Toggle();
-	vTaskDelay(*pDelay_LED); // Разыменование т.е. передача значения задержки
+	vTaskDelay(*pDelay_LED / portTICK_RATE_MS ); // Разыменование т.е. передача значения задержки
 	PCB_LED_Toggle();
-	vTaskDelay(*(uint16_t*)pvParameters); // Можно и без промежуточных переменных, привести pvParameters к указателю uint16_t "(uint16_t*)pvParameters", а затем разименовать
+	vTaskDelay(*(uint16_t*)pvParameters / portTICK_RATE_MS ); // Можно и без промежуточных переменных, привести pvParameters к указателю uint16_t "(uint16_t*)pvParameters", а затем разименовать
 	}
 }
 
