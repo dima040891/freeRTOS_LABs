@@ -28,7 +28,7 @@ const uint16_t *pDelay_LED; // Указатель на Delay_LED для пере
 // еще добавлен static
 
 char USB_Tx_Buf_Task1[24]; // Буфер для передачи в ПК.
-const char *USB_Tx_Buf_Task2 = "Task2 send\r\n";
+const char *USB_Tx_Buf_Task2 = "Task2 send\r\n"; // Указатель на массив символов
 
 void freeRTOS_Tasks_Ini (void)
 {
@@ -38,9 +38,7 @@ void freeRTOS_Tasks_Ini (void)
 
 	Delay_LED = 500;
 	pDelay_LED = &Delay_LED;
-	xTaskCreate(vTask_PCB_LED_Toggle, "Task_PCB_LED_Toggle", 40, (void*) pDelay_LED, 1, NULL); // З-а мигания LED
-
-
+	xTaskCreate(vTask_PCB_LED_Blink, "Task_PCB_LED_Blink", 10, (void*) pDelay_LED, 1, NULL); // З-а мигания LED
 }
 
 void vTask_Transmit_VCP_2(void *pvParameters)
@@ -67,6 +65,7 @@ void vTask_Transmit_VCP(void *pvParameters)
 		while(CDC_Transmit_FS((unsigned char*)USB_Tx_Buf_Task1, strlen(USB_Tx_Buf_Task1))); // // Пытаться послать данные до тех пор USB не будет готов к передаче очерендной посылки.
 		vTaskDelay(500 / portTICK_RATE_MS );
 	}
+	vTaskDelete(NULL);
 
 }
 
@@ -96,11 +95,12 @@ void vTask_USB_Init(void *pvParameters)
 	{
 		vTaskDelay(1000 / portTICK_RATE_MS );
 	}
+	vTaskDelete(NULL);
 
 
 }
 
-void vTask_PCB_LED_Toggle(void *pvParameters)
+void vTask_PCB_LED_Blink(void *pvParameters)
 {
 
 	uint16_t *pDelay_LED = (uint16_t*) pvParameters; // Получение параметра с привденем к иходному типу данных - uint16_t
@@ -112,6 +112,7 @@ void vTask_PCB_LED_Toggle(void *pvParameters)
 	PCB_LED_Toggle();
 	vTaskDelay(*(uint16_t*)pvParameters / portTICK_RATE_MS ); // Можно и без промежуточных переменных, привести pvParameters к указателю uint16_t "(uint16_t*)pvParameters", а затем разименовать
 	}
+	vTaskDelete(NULL);
 }
 
 
