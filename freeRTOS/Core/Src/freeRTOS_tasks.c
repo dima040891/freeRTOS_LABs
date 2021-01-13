@@ -1,6 +1,6 @@
 /************************************************************************************************************************************************************
 *		Файл: freeRTOS_tasks.c
-*		Версия/дата: v0.00/05.01.2021
+*		Версия/дата: v1.00/13.01.2021
 *		Наименование проекта:
 *		Разработал: Тимофеев Д.Г.
 *		Организация:
@@ -38,7 +38,7 @@ void freeRTOS_Tasks_Ini (void)
 
 	Delay_LED = 500;
 	pDelay_LED = &Delay_LED;
-	xTaskCreate(vTask_PCB_LED_Blink, "Task_PCB_LED_Blink", 10, (void*) pDelay_LED, 1, NULL); // З-а мигания LED
+	xTaskCreate(vTask_PCB_LED_Blink, "Task_PCB_LED_Blink", 20, (void*) pDelay_LED, 1, NULL); // З-а мигания LED
 }
 
 void vTask_Transmit_VCP_2(void *pvParameters)
@@ -71,7 +71,6 @@ void vTask_Transmit_VCP(void *pvParameters)
 
 void vTask_USB_Init(void *pvParameters)
 {
-
 	/* Кратковременный перевод GPIOA_12 на выход с записью в него лог. 0 + задержка. Необхадимо для определения USB устройсва после
 	 перепрошивки/сброса МК. Не забыть закмментить родной вызов MX_USB_DEVICE_Init();  после каждой генерации STM32IDE.*/
 
@@ -96,8 +95,6 @@ void vTask_USB_Init(void *pvParameters)
 		vTaskDelay(1000 / portTICK_RATE_MS );
 	}
 	vTaskDelete(NULL);
-
-
 }
 
 void vTask_PCB_LED_Blink(void *pvParameters)

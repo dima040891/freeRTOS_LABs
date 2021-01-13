@@ -171,7 +171,7 @@ void freeRTOS_Tasks_Ini (void)
  80001de:	4b11      	ldr	r3, [pc, #68]	; (8000224 <freeRTOS_Tasks_Ini+0x94>)
  80001e0:	4a0f      	ldr	r2, [pc, #60]	; (8000220 <freeRTOS_Tasks_Ini+0x90>)
  80001e2:	601a      	str	r2, [r3, #0]
-	xTaskCreate(vTask_PCB_LED_Blink, "Task_PCB_LED_Blink", 10, (void*) pDelay_LED, 1, NULL); // З-а мигания LED
+	xTaskCreate(vTask_PCB_LED_Blink, "Task_PCB_LED_Blink", 20, (void*) pDelay_LED, 1, NULL); // З-а мигания LED
  80001e4:	4b0f      	ldr	r3, [pc, #60]	; (8000224 <freeRTOS_Tasks_Ini+0x94>)
  80001e6:	681a      	ldr	r2, [r3, #0]
  80001e8:	2300      	movs	r3, #0
@@ -179,7 +179,7 @@ void freeRTOS_Tasks_Ini (void)
  80001ec:	2301      	movs	r3, #1
  80001ee:	9300      	str	r3, [sp, #0]
  80001f0:	4613      	mov	r3, r2
- 80001f2:	220a      	movs	r2, #10
+ 80001f2:	2214      	movs	r2, #20
  80001f4:	490c      	ldr	r1, [pc, #48]	; (8000228 <freeRTOS_Tasks_Ini+0x98>)
  80001f6:	480d      	ldr	r0, [pc, #52]	; (800022c <freeRTOS_Tasks_Ini+0x9c>)
  80001f8:	f007 f87b 	bl	80072f2 <xTaskCreate>
