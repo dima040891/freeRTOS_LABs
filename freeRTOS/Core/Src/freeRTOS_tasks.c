@@ -50,18 +50,24 @@ void freeRTOS_Tasks_Ini (void)
 	pDelay_LED = &Delay_LED;
 
 
-
-
-
 	if(xQueue1 != NULL) // Если очередь создалась успешно (хватило место в куче), то создать задачи отправки получения данных
 	{
 		xTaskCreate(vTask_Queue_Data_Send, "Task_Queue_Data_Send", 200, NULL, 1, NULL); // З-а отправки данных в очередь
 		xTaskCreate(vTask_Queue_Data_Recieve, "Task_Queue_Data_Recieve", 200, NULL, 1, NULL); // З-а которая получает данные из очереди и отправляет тестовое сообщение.
-		xTaskCreate(vTask_PCB_LED_Blink, "Task_PCB_LED_Blink", 40, (void*) pDelay_LED, 1, NULL); // З-а мигания LED
+
+		if (xTaskCreate(vTask_PCB_LED_Blink, "Task_PCB_LED_Blink", 200, (void*) pDelay_LED, 1, NULL) == errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY) // З-а мигания LED
+		{
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+		}
+		else
+		{
+
+		}
 	}
 	else
 	{
 		//Если все хорошо то ветка else не исполнится, что означает что очередь создана.
+
 	}
 
 	osKernelStart();
