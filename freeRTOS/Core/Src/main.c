@@ -67,6 +67,7 @@ void StartDefaultTask(void *argument);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+
 /* USER CODE END 0 */
 
 /**
@@ -118,6 +119,9 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
+
+
+
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
@@ -126,6 +130,10 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+
+  PCB_Init();
+  freeRTOS_Tasks_Ini();
+
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -133,7 +141,7 @@ int main(void)
   /* USER CODE END RTOS_EVENTS */
 
   /* Start scheduler */
-  osKernelStart();
+  //osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
@@ -235,8 +243,10 @@ void StartDefaultTask(void *argument)
   //MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 5 */
 
-  PCB_Init();
-  freeRTOS_Tasks_Ini();
+//	  PCB_Init();
+//	  freeRTOS_Tasks_Ini();
+
+
 
   /* Infinite loop */
   for(;;)

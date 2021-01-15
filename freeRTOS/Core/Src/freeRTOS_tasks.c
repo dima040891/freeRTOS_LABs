@@ -19,6 +19,9 @@
 
 #include "FreeRTOS.h"
 #include "task.h"
+#include "queue.h"
+#include "cmsis_os.h"
+
 
 #include "usb_device.h"
 #include "usbd_cdc_if.h"
@@ -30,16 +33,108 @@ const uint16_t *pDelay_LED; // Указатель на Delay_LED для пере
 char USB_Tx_Buf_Task1[24]; // Буфер для передачи в ПК.
 const char *USB_Tx_Buf_Task2 = "Task2 send\r\n"; // Указатель на массив символов
 
+xQueueHandle xQueue1; // Декларирование переменной xQueueHandle т.е. создание ссылки на будущую очередь
+
+
+// Внимание! QueueHandle_t является более современным аналогом xQueueHandle. Разобраться с этим позже
+
 void freeRTOS_Tasks_Ini (void)
 {
+	xQueue1 = xQueueCreate(4, sizeof(char)); // Создание очереди из 4 элементов размерностью 8 бит
+
 	xTaskCreate(vTask_USB_Init, "Task_USB_Init", 100, NULL, 2, NULL); // З-а сброса лнии D+ после каждого запуска МК. Необхадимо для определения устройсва на шине USB.
-	xTaskCreate(vTask_Transmit_VCP, "Task_Transmit_VCP", 120, NULL, 1, NULL); // З-а переиодческой отправки сообщения в VCP. Задача должна быть запущена после удаления vTask_USB_Init.
-	xTaskCreate(vTask_Transmit_VCP_2, "Task_Transmit_VCP_2", 120, (void*) USB_Tx_Buf_Task2, 1, NULL); // Вывод второго тестового сообщения
+	//xTaskCreate(vTask_Transmit_VCP, "Task_Transmit_VCP", 120, NULL, 1, NULL); // З-а переиодческой отправки сообщения в VCP. Задача должна быть запущена после удаления vTask_USB_Init.
+	//xTaskCreate(vTask_Transmit_VCP_2, "Task_Transmit_VCP_2", 120, (void*) USB_Tx_Buf_Task2, 1, NULL); // Вывод второго тестового сообщения
 
 	Delay_LED = 500;
 	pDelay_LED = &Delay_LED;
-	xTaskCreate(vTask_PCB_LED_Blink, "Task_PCB_LED_Blink", 20, (void*) pDelay_LED, 1, NULL); // З-а мигания LED
+
+
+
+
+
+	if(xQueue1 != NULL) // Если очередь создалась успешно (хватило место в куче), то создать задачи отправки получения данных
+	{
+		xTaskCreate(vTask_Queue_Data_Send, "Task_Queue_Data_Send", 200, NULL, 1, NULL); // З-а отправки данных в очередь
+		xTaskCreate(vTask_Queue_Data_Recieve, "Task_Queue_Data_Recieve", 200, NULL, 1, NULL); // З-а которая получает данные из очереди и отправляет тестовое сообщение.
+		xTaskCreate(vTask_PCB_LED_Blink, "Task_PCB_LED_Blink", 40, (void*) pDelay_LED, 1, NULL); // З-а мигания LED
+	}
+	else
+	{
+		//Если все хорошо то ветка else не исполнится, что означает что очередь создана.
+	}
+
+	osKernelStart();
+
 }
+
+
+
+void vTask_Queue_Data_Send(void *pvParameters)
+{
+	char Queue_Data_Send = 'Q'; // Передаваемы данные
+
+	portBASE_TYPE xStatus; // Статус операции
+
+	for(;;)
+	{
+		//HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+
+		// Отправка данных в очередь xQueue1, данные - Queue_Data, время ожидания появления свободного места в очереди 0, т.е. в очереди должны быть хотя бы одно свободное место
+
+		xStatus = xQueueSendToBack(xQueue1, &Queue_Data_Send, 0);
+
+		if (xStatus != pdPASS)
+		{
+			while (CDC_Transmit_FS((unsigned char*)"Could not send to the queue.\r\n", strlen("Could not send to the queue.\r\n"))); // Если не было свободного места в очереди
+		}
+		else
+		{
+			//while (CDC_Transmit_FS((unsigned char*)"send to the queue.\r\n", strlen("send to the queue.\r\n")));
+		}
+
+		/*Вызов taskYIELD() информирует шедулер, что сейчас сразу
+        нужно переключиться к другой задаче, а не поддерживать эту задачу в
+        состоянии Running до окончания текущего слайса времени*/
+
+		//taskYIELD();
+		vTaskDelay(500 / portTICK_RATE_MS );
+
+	}
+	vTaskDelete(NULL);
+}
+
+void vTask_Queue_Data_Recieve(void *pvParameters)
+{
+	char Queue_Data_Recieve; // Переменная для хранения полученных данных из очереди
+
+	portBASE_TYPE xStatus; // Статус операции
+
+	for(;;)
+	{
+		// Попытаться (если очередь не пуста) получить данные из очереди
+
+
+
+		xStatus = xQueueReceive(xQueue1, &Queue_Data_Recieve, 150); // Очередь откуда брать данные, переменная куда сохраняются данные, время ожидания появления данных в очереди
+
+		if(xStatus == pdPASS)
+		{
+			while (CDC_Transmit_FS((unsigned char*)"Received from xQueue1 = ", strlen("Received from xQueue1 = ")));
+			while (CDC_Transmit_FS((unsigned char*) &Queue_Data_Recieve, 1));
+			while (CDC_Transmit_FS((unsigned char*)"\r\n", strlen("\r\n")));
+		}
+		else
+		{
+			while (CDC_Transmit_FS((unsigned char*)"Could not receive from the queue.\r\n", strlen("Could not receive from the queue.\r\n")));
+		}
+		vTaskDelay(500 / portTICK_RATE_MS );
+	}
+
+	vTaskDelete(NULL);
+}
+
+
 
 void vTask_Transmit_VCP_2(void *pvParameters)
 {

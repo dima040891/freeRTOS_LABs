@@ -22,6 +22,4 @@ void PCB_LED_Toggle(); // Ф-я включения/отключения индк
 
 
 
-
-
 #endif /* INC_PCB_BLUEPILL_H_ */

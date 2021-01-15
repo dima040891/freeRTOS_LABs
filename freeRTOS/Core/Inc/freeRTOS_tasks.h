@@ -26,4 +26,8 @@ void vTask_Transmit_VCP(void *pvParameters); // З-а переиодческой
 
 void vTask_Transmit_VCP_2(void *pvParameters); // З-а переиодческой отправки сообщения №2 в VCP. Задача должна быть запущена после удаления vTask_USB_Init.
 
+void vTask_Queue_Data_Send(void *pvParameters); // З-а отправки данных в очередь
+
+void vTask_Queue_Data_Recieve(void *pvParameters); // З-а которая получает данные из очереди и отправляет тестовое сообщение.
+
 #endif /* INC_FREERTOS_TASKS_H_ */
