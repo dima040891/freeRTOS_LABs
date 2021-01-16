@@ -1,0 +1,4 @@
+heap_1.c:70:7:pvPortMalloc	24	static
+heap_1.c:122:6:vPortFree	24	static,ignoring_inline_asm
+heap_1.c:134:6:vPortInitialiseBlocks	4	static
+heap_1.c:141:8:xPortGetFreeHeapSize	4	static

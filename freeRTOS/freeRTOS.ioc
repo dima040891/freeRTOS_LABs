@@ -1,9 +1,12 @@
 #MicroXplorer Configuration settings - do not modify
 FREERTOS.FootprintOK=true
 FREERTOS.HEAP_NUMBER=4
-FREERTOS.IPParameters=Tasks01,FootprintOK,HEAP_NUMBER,configTOTAL_HEAP_SIZE
+FREERTOS.IPParameters=Tasks01,FootprintOK,HEAP_NUMBER,configTOTAL_HEAP_SIZE,configGENERATE_RUN_TIME_STATS,configRECORD_STACK_HIGH_ADDRESS,configMAX_TASK_NAME_LEN
 FREERTOS.Tasks01=defaultTask,24,128,StartDefaultTask,Default,NULL,Dynamic,NULL,NULL
-FREERTOS.configTOTAL_HEAP_SIZE=4096
+FREERTOS.configGENERATE_RUN_TIME_STATS=1
+FREERTOS.configMAX_TASK_NAME_LEN=32
+FREERTOS.configRECORD_STACK_HIGH_ADDRESS=1
+FREERTOS.configTOTAL_HEAP_SIZE=8192
 File.Version=6
 GPIO.groupedBy=Group By Peripherals
 KeepUserPlacement=false

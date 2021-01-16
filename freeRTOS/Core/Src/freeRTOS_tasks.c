@@ -43,8 +43,8 @@ void freeRTOS_Tasks_Ini (void)
 	xQueue1 = xQueueCreate(4, sizeof(char)); // Создание очереди из 4 элементов размерностью 8 бит
 
 	xTaskCreate(vTask_USB_Init, "Task_USB_Init", 100, NULL, 2, NULL); // З-а сброса лнии D+ после каждого запуска МК. Необхадимо для определения устройсва на шине USB.
-	//xTaskCreate(vTask_Transmit_VCP, "Task_Transmit_VCP", 120, NULL, 1, NULL); // З-а переиодческой отправки сообщения в VCP. Задача должна быть запущена после удаления vTask_USB_Init.
-	//xTaskCreate(vTask_Transmit_VCP_2, "Task_Transmit_VCP_2", 120, (void*) USB_Tx_Buf_Task2, 1, NULL); // Вывод второго тестового сообщения
+	xTaskCreate(vTask_Transmit_VCP, "Task_Transmit_VCP", 120, NULL, 1, NULL); // З-а переиодческой отправки сообщения в VCP. Задача должна быть запущена после удаления vTask_USB_Init.
+	xTaskCreate(vTask_Transmit_VCP_2, "Task_Transmit_VCP_2", 120, (void*) USB_Tx_Buf_Task2, 1, NULL); // Вывод второго тестового сообщения
 
 	Delay_LED = 500;
 	pDelay_LED = &Delay_LED;
@@ -55,7 +55,7 @@ void freeRTOS_Tasks_Ini (void)
 		xTaskCreate(vTask_Queue_Data_Send, "Task_Queue_Data_Send", 200, NULL, 1, NULL); // З-а отправки данных в очередь
 		xTaskCreate(vTask_Queue_Data_Recieve, "Task_Queue_Data_Recieve", 200, NULL, 1, NULL); // З-а которая получает данные из очереди и отправляет тестовое сообщение.
 
-		if (xTaskCreate(vTask_PCB_LED_Blink, "Task_PCB_LED_Blink", 200, (void*) pDelay_LED, 1, NULL) == errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY) // З-а мигания LED
+		if (xTaskCreate(vTask_PCB_LED_Blink, "Task_PCB_LED_Blink", 40, (void*) pDelay_LED, 1, NULL) == errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY) // З-а мигания LED
 		{
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 		}
@@ -150,7 +150,7 @@ void vTask_Transmit_VCP_2(void *pvParameters)
 
 	for(;;)
 	{
-		while (CDC_Transmit_FS((unsigned char*)vTask2_Name, strlen(vTask2_Name))); // Пытаться послать данные до тех пор USB не будет готов к передаче очерендной посылки.
+		while(CDC_Transmit_FS((unsigned char*)vTask2_Name, strlen(vTask2_Name))); // Пытаться послать данные до тех пор USB не будет готов к передаче очерендной посылки.
 			//скорее всего ф-я CDC_Transmit_FS() проверяет свобдны ли аппаратные ресурсы МК к передаче по USB. Если нет, то сразу выходит из функции с ошибкой.
 		vTaskDelay(500 / portTICK_RATE_MS );
 	}
