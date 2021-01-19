@@ -263,7 +263,7 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
   //USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
 
   strncpy(VCP_Rx_Buf, (char*)Buf, *Len);
-  VCP_Rx_Buf[*Len] = 0;
+  VCP_Rx_Buf[*Len] = 0; //Конец строки
 
   USBD_CDC_ReceivePacket(&hUsbDeviceFS);
   return (USBD_OK);

@@ -83,9 +83,12 @@ void vTask_Sync_Recieve_VCP(void *pvParameters)
 	{
 		vTaskDelay(1000 / portTICK_RATE_MS );
 
-		while (CDC_Transmit_FS((unsigned char*)"Data received from VCP = ", strlen("Data received from VCP = ")));
-		while (CDC_Transmit_FS((unsigned char*) &VCP_Rx_Buf, 1));
-		while (CDC_Transmit_FS((unsigned char*)"\r\n", strlen("\r\n")));
+		(CDC_Transmit_FS((unsigned char*)"Data received from VCP = ", strlen("Data received from VCP = ")));
+		vTaskDelay(50 / portTICK_RATE_MS );
+		(CDC_Transmit_FS((unsigned char*) &VCP_Rx_Buf, 10));
+		vTaskDelay(50 / portTICK_RATE_MS );
+		(CDC_Transmit_FS((unsigned char*)"\r\n", strlen("\r\n")));
+		vTaskDelay(50 / portTICK_RATE_MS );
 
 	}
 	vTaskDelete(NULL);
