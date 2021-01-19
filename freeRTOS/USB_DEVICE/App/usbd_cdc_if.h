@@ -95,7 +95,7 @@
 extern USBD_CDC_ItfTypeDef USBD_Interface_fops_FS;
 
 /* USER CODE BEGIN EXPORTED_VARIABLES */
-
+char VCP_Rx_Buf[64]; // Буфер для полученных от ПК данных
 /* USER CODE END EXPORTED_VARIABLES */
 
 /**

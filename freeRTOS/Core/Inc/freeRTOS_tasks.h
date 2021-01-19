@@ -30,4 +30,6 @@ void vTask_Queue_Data_Send(void *pvParameters); // З-а отправки дан
 
 void vTask_Queue_Data_Recieve(void *pvParameters); // З-а которая получает данные из очереди и отправляет тестовое сообщение.
 
+void vTask_Sync_Recieve_VCP(void *pvParameters); // З-а засинхронизированная с приемом данных по VCP с помощью семфара
+
 #endif /* INC_FREERTOS_TASKS_H_ */

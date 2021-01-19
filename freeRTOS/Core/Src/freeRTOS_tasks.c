@@ -36,6 +36,7 @@ const char *USB_Tx_Buf_Task2 = "Task2 send\r\n"; // Указатель на ма
 xQueueHandle xQueue1; // Декларирование переменной xQueueHandle т.е. создание ссылки на будущую очередь
 
 
+
 // Внимание! QueueHandle_t является более современным аналогом xQueueHandle. Разобраться с этим позже
 
 void freeRTOS_Tasks_Ini (void)
@@ -43,8 +44,9 @@ void freeRTOS_Tasks_Ini (void)
 	xQueue1 = xQueueCreate(4, sizeof(char)); // Создание очереди из 4 элементов размерностью 8 бит
 
 	xTaskCreate(vTask_USB_Init, "Task_USB_Init", 100, NULL, 2, NULL); // З-а сброса лнии D+ после каждого запуска МК. Необхадимо для определения устройсва на шине USB.
-	xTaskCreate(vTask_Transmit_VCP, "Task_Transmit_VCP", 120, NULL, 1, NULL); // З-а переиодческой отправки сообщения в VCP. Задача должна быть запущена после удаления vTask_USB_Init.
-	xTaskCreate(vTask_Transmit_VCP_2, "Task_Transmit_VCP_2", 120, (void*) USB_Tx_Buf_Task2, 1, NULL); // Вывод второго тестового сообщения
+	//xTaskCreate(vTask_Transmit_VCP, "Task_Transmit_VCP", 120, NULL, 1, NULL); // З-а переиодческой отправки сообщения в VCP. Задача должна быть запущена после удаления vTask_USB_Init.
+	//xTaskCreate(vTask_Transmit_VCP_2, "Task_Transmit_VCP_2", 120, (void*) USB_Tx_Buf_Task2, 1, NULL); // Вывод второго тестового сообщения
+	xTaskCreate(vTask_Sync_Recieve_VCP, "Task_Sync_Recieve_VCP", 120, NULL, 2, NULL);
 
 	Delay_LED = 500;
 	pDelay_LED = &Delay_LED;
@@ -52,8 +54,8 @@ void freeRTOS_Tasks_Ini (void)
 
 	if(xQueue1 != NULL) // Если очередь создалась успешно (хватило место в куче), то создать задачи отправки получения данных
 	{
-		xTaskCreate(vTask_Queue_Data_Send, "Task_Queue_Data_Send", 200, NULL, 1, NULL); // З-а отправки данных в очередь
-		xTaskCreate(vTask_Queue_Data_Recieve, "Task_Queue_Data_Recieve", 200, NULL, 1, NULL); // З-а которая получает данные из очереди и отправляет тестовое сообщение.
+		//xTaskCreate(vTask_Queue_Data_Send, "Task_Queue_Data_Send", 90, NULL, 1, NULL); // З-а отправки данных в очередь
+		//xTaskCreate(vTask_Queue_Data_Recieve, "Task_Queue_Data_Recieve", 90, NULL, 1, NULL); // З-а которая получает данные из очереди и отправляет тестовое сообщение.
 
 		if (xTaskCreate(vTask_PCB_LED_Blink, "Task_PCB_LED_Blink", 40, (void*) pDelay_LED, 1, NULL) == errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY) // З-а мигания LED
 		{
@@ -72,6 +74,21 @@ void freeRTOS_Tasks_Ini (void)
 
 	osKernelStart();
 
+}
+
+void vTask_Sync_Recieve_VCP(void *pvParameters)
+{
+
+	for(;;)
+	{
+		vTaskDelay(1000 / portTICK_RATE_MS );
+
+		while (CDC_Transmit_FS((unsigned char*)"Data received from VCP = ", strlen("Data received from VCP = ")));
+		while (CDC_Transmit_FS((unsigned char*) &VCP_Rx_Buf, 1));
+		while (CDC_Transmit_FS((unsigned char*)"\r\n", strlen("\r\n")));
+
+	}
+	vTaskDelete(NULL);
 }
 
 
@@ -104,7 +121,7 @@ void vTask_Queue_Data_Send(void *pvParameters)
         состоянии Running до окончания текущего слайса времени*/
 
 		//taskYIELD();
-		vTaskDelay(500 / portTICK_RATE_MS );
+		vTaskDelay(1000 / portTICK_RATE_MS );
 
 	}
 	vTaskDelete(NULL);
@@ -134,7 +151,7 @@ void vTask_Queue_Data_Recieve(void *pvParameters)
 		{
 			while (CDC_Transmit_FS((unsigned char*)"Could not receive from the queue.\r\n", strlen("Could not receive from the queue.\r\n")));
 		}
-		vTaskDelay(500 / portTICK_RATE_MS );
+		vTaskDelay(1000 / portTICK_RATE_MS );
 	}
 
 	vTaskDelete(NULL);
