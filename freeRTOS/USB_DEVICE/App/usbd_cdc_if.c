@@ -23,6 +23,11 @@
 #include "usbd_cdc_if.h"
 
 /* USER CODE BEGIN INCLUDE */
+#include "FreeRTOS.h"
+#include "semphr.h"
+#include "freeRTOS_tasks.h"
+
+
 
 /* USER CODE END INCLUDE */
 
@@ -32,7 +37,7 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+extern xSemaphoreHandle xSemaphoreBinary1;
 /* USER CODE END PV */
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
@@ -261,6 +266,31 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 6 */
   //USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
+
+	static portBASE_TYPE xHigherPriorityTaskWoken;
+	  xHigherPriorityTaskWoken = pdFALSE;
+
+	xSemaphoreGiveFromISR(xSemaphoreBinary1,&xHigherPriorityTaskWoken);
+
+	if( xHigherPriorityTaskWoken == pdTRUE )
+	  {
+	     /* Выдача семафора разблокирует задачу, и приоритет разблокированной
+	        задачи выше, чем у текущей выполняющейся задачи - поэтому контекст
+	        выполнения переключается принудительно в разблокированную (с более
+	        высоким приоритетом) задачу.
+	        ВНИМАНИЕ: макрос, реально используемый для переключения контекста
+	        из ISR, зависит от конкретного порта FreeRTOS. Здесь указано
+	        имя макроса, корректное для порта Open Watcom DOS. Другие порты
+	        FreeRTOS могут использовать другой синтаксис. Для определения
+	        используемого синтаксиса обратитесь к примерам, предоставленным
+	        вместе с портом FreeRTOS. */
+	     //portSWITCH_CONTEXT();
+
+	  }
+
+
+	memset(VCP_Rx_Buf, (int32_t) ' ', 64); // Очитска буфера
+
 
   strncpy(VCP_Rx_Buf, (char*)Buf, *Len);
   VCP_Rx_Buf[*Len] = 0; //Конец строки

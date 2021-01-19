@@ -21,6 +21,7 @@
 #include "task.h"
 #include "queue.h"
 #include "cmsis_os.h"
+#include "semphr.h"
 
 
 #include "usb_device.h"
@@ -35,6 +36,8 @@ const char *USB_Tx_Buf_Task2 = "Task2 send\r\n"; // Указатель на ма
 
 xQueueHandle xQueue1; // Декларирование переменной xQueueHandle т.е. создание ссылки на будущую очередь
 
+xSemaphoreHandle xSemaphoreBinary1; // Декларирование переменной xSemaphoreBinary1, т.е. создание ссылки на будущий семафор
+
 
 
 // Внимание! QueueHandle_t является более современным аналогом xQueueHandle. Разобраться с этим позже
@@ -42,6 +45,8 @@ xQueueHandle xQueue1; // Декларирование переменной xQueu
 void freeRTOS_Tasks_Ini (void)
 {
 	xQueue1 = xQueueCreate(4, sizeof(char)); // Создание очереди из 4 элементов размерностью 8 бит
+
+	vSemaphoreCreateBinary(xSemaphoreBinary1); // Создание двоичного семафора
 
 	xTaskCreate(vTask_USB_Init, "Task_USB_Init", 100, NULL, 2, NULL); // З-а сброса лнии D+ после каждого запуска МК. Необхадимо для определения устройсва на шине USB.
 	//xTaskCreate(vTask_Transmit_VCP, "Task_Transmit_VCP", 120, NULL, 1, NULL); // З-а переиодческой отправки сообщения в VCP. Задача должна быть запущена после удаления vTask_USB_Init.
@@ -81,7 +86,9 @@ void vTask_Sync_Recieve_VCP(void *pvParameters)
 
 	for(;;)
 	{
-		vTaskDelay(1000 / portTICK_RATE_MS );
+		//vTaskDelay(1000 / portTICK_RATE_MS );
+
+		xSemaphoreTake( xSemaphoreBinary1, portMAX_DELAY );
 
 		(CDC_Transmit_FS((unsigned char*)"Data received from VCP = ", strlen("Data received from VCP = ")));
 		vTaskDelay(50 / portTICK_RATE_MS );
