@@ -24,6 +24,7 @@
 
 /* USER CODE BEGIN INCLUDE */
 #include "FreeRTOS.h"
+#include "task.h"
 #include "semphr.h"
 #include "freeRTOS_tasks.h"
 
@@ -285,6 +286,9 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 	        используемого синтаксиса обратитесь к примерам, предоставленным
 	        вместе с портом FreeRTOS. */
 	     //portSWITCH_CONTEXT();
+		//vTaskSwitchContext();
+		//portYIELD_FROM_ISR(NULL);
+		vTaskMissedYield(); // Переключение контекста. Нужно тестить, возможно это ошибка
 
 	  }
 
