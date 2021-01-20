@@ -36,10 +36,6 @@ const char *USB_Tx_Buf_Task2 = "Task2 send\r\n"; // Указатель на ма
 
 xQueueHandle xQueue1; // Декларирование переменной xQueueHandle т.е. создание ссылки на будущую очередь
 
-xSemaphoreHandle xSemaphoreBinary1; // Декларирование переменной xSemaphoreBinary1, т.е. создание ссылки на будущий семафор
-
-
-
 // Внимание! QueueHandle_t является более современным аналогом xQueueHandle. Разобраться с этим позже
 
 void freeRTOS_Tasks_Ini (void)

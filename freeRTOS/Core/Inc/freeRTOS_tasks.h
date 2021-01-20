@@ -16,6 +16,11 @@
 #ifndef INC_FREERTOS_TASKS_H_
 #define INC_FREERTOS_TASKS_H_
 
+#include "FreeRTOS.h"
+#include "semphr.h"
+
+xSemaphoreHandle xSemaphoreBinary1; // Декларирование переменной xSemaphoreBinary1, т.е. создание ссылки на будущий семафор
+
 void freeRTOS_Tasks_Ini (void); // Функция создания задач freeRTOS. Задачи создаются из задачи idle task на запущенном планировщике.
 
 void vTask_PCB_LED_Blink(void *pvParameters); // З-а мигания индикаторного светодиода.

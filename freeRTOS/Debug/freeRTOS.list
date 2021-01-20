@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000029  00000000  00000000  00020180  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0001e450  00000000  00000000  000201a9  2**0
+ 12 .debug_info   0001e47d  00000000  00000000  000201a9  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_abbrev 00004085  00000000  00000000  0003e5f9  2**0
+ 13 .debug_abbrev 00004085  00000000  00000000  0003e626  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_aranges 00001260  00000000  00000000  00042680  2**3
+ 14 .debug_aranges 00001260  00000000  00000000  000426b0  2**3
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_ranges 00001078  00000000  00000000  000438e0  2**3
+ 15 .debug_ranges 00001078  00000000  00000000  00043910  2**3
                   CONTENTS, READONLY, DEBUGGING
- 16 .debug_macro  0001bb35  00000000  00000000  00044958  2**0
+ 16 .debug_macro  0001bb4d  00000000  00000000  00044988  2**0
                   CONTENTS, READONLY, DEBUGGING
- 17 .debug_line   00013ec3  00000000  00000000  0006048d  2**0
+ 17 .debug_line   00013eda  00000000  00000000  000604d5  2**0
                   CONTENTS, READONLY, DEBUGGING
- 18 .debug_str    0008e5d8  00000000  00000000  00074350  2**0
+ 18 .debug_str    0008e5d8  00000000  00000000  000743af  2**0
                   CONTENTS, READONLY, DEBUGGING
- 19 .comment      0000007b  00000000  00000000  00102928  2**0
+ 19 .comment      0000007b  00000000  00000000  00102987  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  000048b8  00000000  00000000  001029a4  2**2
+ 20 .debug_frame  000048b8  00000000  00000000  00102a04  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -112,7 +112,7 @@ void PCB_LED_Toggle()
  800017c:	40011000 	.word	0x40011000
 
 08000180 <freeRTOS_Tasks_Ini>:
-
+xQueueHandle xQueue1; // Декларирование переменной xQueueHandle т.е. создание ссылки на будущую очередь
 
 // Внимание! QueueHandle_t является более современным аналогом xQueueHandle. Разобраться с этим позже
 
@@ -25069,7 +25069,7 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 	     //portSWITCH_CONTEXT();
 		//vTaskSwitchContext();
 		//portYIELD_FROM_ISR(NULL);
-		vTaskMissedYield();
+		vTaskMissedYield(); // Переключение контекста. Нужно тестить, возможно это ошибка
  8009624:	f7fe fdba 	bl	800819c <vTaskMissedYield>
 
 	  }
