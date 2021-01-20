@@ -1,2 +1,4 @@
-PCB_BluePill.c:19:6:PCB_Init	8	static
-PCB_BluePill.c:24:6:PCB_LED_Toggle	8	static
+PCB_BluePill.c:22:6:PCB_Init	8	static
+PCB_BluePill.c:27:6:PCB_LED_Toggle	8	static
+PCB_BluePill.c:32:6:PCB_OutString_VCP	16	static
+PCB_BluePill.c:37:6:PCB_OutData_VCP	16	static

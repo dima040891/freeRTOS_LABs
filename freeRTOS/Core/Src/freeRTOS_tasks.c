@@ -86,11 +86,17 @@ void vTask_Sync_Recieve_VCP(void *pvParameters)
 
 		xSemaphoreTake( xSemaphoreBinary1, portMAX_DELAY );
 
-		(CDC_Transmit_FS((unsigned char*)"Data received from VCP = ", strlen("Data received from VCP = ")));
+		PCB_OutString_VCP((unsigned char*) "Data received from VCP = ");
+
+		//(CDC_Transmit_FS((unsigned char*)"Data received from VCP = ", strlen("Data received from VCP = ")));
 		vTaskDelay(50 / portTICK_RATE_MS );
-		(CDC_Transmit_FS((unsigned char*) &VCP_Rx_Buf, 10));
+		//(CDC_Transmit_FS((unsigned char*) &VCP_Rx_Buf, 10));
+		PCB_OutData_VCP((unsigned char*) &VCP_Rx_Buf, 10);
 		vTaskDelay(50 / portTICK_RATE_MS );
-		(CDC_Transmit_FS((unsigned char*)"\r\n", strlen("\r\n")));
+
+		PCB_OutString_VCP((unsigned char*) "\r\n");
+
+		//(CDC_Transmit_FS((unsigned char*)"\r\n", strlen("\r\n")));
 		vTaskDelay(50 / portTICK_RATE_MS );
 
 	}
