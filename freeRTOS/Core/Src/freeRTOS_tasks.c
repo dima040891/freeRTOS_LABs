@@ -42,7 +42,12 @@ void freeRTOS_Tasks_Ini (void)
 {
 	xQueue1 = xQueueCreate(4, sizeof(char)); // Создание очереди из 4 элементов размерностью 8 бит
 
-	vSemaphoreCreateBinary(xSemaphoreBinary1); // Создание двоичного семафора
+	//vSemaphoreCreateBinary(xSemaphoreBinary1); // Создание двоичного семафора
+
+	// Создание счетного семафора
+	xSemaphoreBinary1 = xQueueCreateCountingSemaphore(10, 0); // Первый аргмент - это максимальное количество счета, второй - начальное значение счетчика
+
+
 
 	xTaskCreate(vTask_USB_Init, "Task_USB_Init", 100, NULL, 2, NULL); // З-а сброса лнии D+ после каждого запуска МК. Необхадимо для определения устройсва на шине USB.
 	//xTaskCreate(vTask_Transmit_VCP, "Task_Transmit_VCP", 120, NULL, 1, NULL); // З-а переиодческой отправки сообщения в VCP. Задача должна быть запущена после удаления vTask_USB_Init.
@@ -84,7 +89,8 @@ void vTask_Sync_Recieve_VCP(void *pvParameters)
 	{
 		//vTaskDelay(1000 / portTICK_RATE_MS );
 
-		xSemaphoreTake( xSemaphoreBinary1, portMAX_DELAY );
+		xSemaphoreTake( xSemaphoreBinary1, portMAX_DELAY ); // Попытка взять семафор. Если семафор недоспуен, то задача блокируется до его доступонсоти или
+		//истечения таймаута (в данном случае макрос portMAX_DELAY обеспечивает бесконечное ожидания семафора)
 
 		PCB_OutString_VCP((unsigned char*) "Data received from VCP = ");
 

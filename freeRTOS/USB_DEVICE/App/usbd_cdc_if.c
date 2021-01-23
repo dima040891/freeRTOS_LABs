@@ -269,7 +269,7 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
   //USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
 
 	static portBASE_TYPE xHigherPriorityTaskWoken;
-	  xHigherPriorityTaskWoken = pdFALSE;
+	  xHigherPriorityTaskWoken = pdFALSE; // Не переключать контекст
 
 	xSemaphoreGiveFromISR(xSemaphoreBinary1,&xHigherPriorityTaskWoken);
 
@@ -292,11 +292,10 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 
 	  }
 
+	memset(VCP_Rx_Buf, (int32_t) ' ', 64); // Очитска входного буфера
 
-	memset(VCP_Rx_Buf, (int32_t) ' ', 64); // Очитска буфера
 
-
-  strncpy(VCP_Rx_Buf, (char*)Buf, *Len);
+  strncpy(VCP_Rx_Buf, (char*)Buf, *Len); // Копирование данных в пользовательский буфер из буфера HAL
   VCP_Rx_Buf[*Len] = 0; //Конец строки
 
   USBD_CDC_ReceivePacket(&hUsbDeviceFS);
