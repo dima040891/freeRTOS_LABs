@@ -34,13 +34,12 @@ const uint16_t *pDelay_LED; // Указатель на Delay_LED для пере
 char USB_Tx_Buf_Task1[24]; // Буфер для передачи в ПК.
 const char *USB_Tx_Buf_Task2 = "Task2 send\r\n"; // Указатель на массив символов
 
-xQueueHandle xQueue1; // Декларирование переменной xQueueHandle т.е. создание ссылки на будущую очередь
 
 // Внимание! QueueHandle_t является более современным аналогом xQueueHandle. Разобраться с этим позже
 
 void freeRTOS_Tasks_Ini (void)
 {
-	xQueue1 = xQueueCreate(4, sizeof(char)); // Создание очереди из 4 элементов размерностью 8 бит
+	xQueue1 = xQueueCreate(10, sizeof(char)); // Создание очереди из 4 элементов размерностью 8 бит
 
 	//vSemaphoreCreateBinary(xSemaphoreBinary1); // Создание двоичного семафора
 
@@ -52,7 +51,8 @@ void freeRTOS_Tasks_Ini (void)
 	xTaskCreate(vTask_USB_Init, "Task_USB_Init", 100, NULL, 2, NULL); // З-а сброса лнии D+ после каждого запуска МК. Необхадимо для определения устройсва на шине USB.
 	//xTaskCreate(vTask_Transmit_VCP, "Task_Transmit_VCP", 120, NULL, 1, NULL); // З-а переиодческой отправки сообщения в VCP. Задача должна быть запущена после удаления vTask_USB_Init.
 	//xTaskCreate(vTask_Transmit_VCP_2, "Task_Transmit_VCP_2", 120, (void*) USB_Tx_Buf_Task2, 1, NULL); // Вывод второго тестового сообщения
-	xTaskCreate(vTask_Sync_Recieve_VCP, "Task_Sync_Recieve_VCP", 120, NULL, 2, NULL);
+	//xTaskCreate(vTask_Sync_Recieve_VCP, "Task_Sync_Recieve_VCP", 120, NULL, 2, NULL);
+	xTaskCreate(vTask_SyncQueueISR_Data_Recieve, "vTask_SyncQueueISR_Data_Recieve", 500, NULL, 2, NULL);
 
 	Delay_LED = 500;
 	pDelay_LED = &Delay_LED;
@@ -80,6 +80,38 @@ void freeRTOS_Tasks_Ini (void)
 
 	osKernelStart();
 
+}
+
+void vTask_SyncQueueISR_Data_Recieve(void *pvParameters)
+{
+	char data_from_VCP[10]; // Переменная для хранения полученных данных из очереди
+
+	portBASE_TYPE xStatus; // Статус операции
+
+	for(;;)
+	{
+		// Попытаться (если очередь не пуста) получить данные из очереди
+
+
+
+		// Очередь откуда брать данные, переменная куда сохраняются данные, время ожидания появления данных в очереди
+
+		xStatus = xQueueReceive(xQueue1, data_from_VCP, portMAX_DELAY);
+
+		if(xStatus == pdPASS)
+		{
+			while (CDC_Transmit_FS((unsigned char*)"Received from xQueue1 = ", strlen("Received from xQueue1 = ")));
+			while (CDC_Transmit_FS((unsigned char*) &data_from_VCP, 10));
+			while (CDC_Transmit_FS((unsigned char*)"\r\n", strlen("\r\n")));
+		}
+		else
+		{
+			while (CDC_Transmit_FS((unsigned char*)"Could not receive from the queue.\r\n", strlen("Could not receive from the queue.\r\n")));
+		}
+		vTaskDelay(1000 / portTICK_RATE_MS );
+	}
+
+	vTaskDelete(NULL);
 }
 
 void vTask_Sync_Recieve_VCP(void *pvParameters)

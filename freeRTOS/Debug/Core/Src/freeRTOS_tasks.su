@@ -1,8 +1,9 @@
-freeRTOS_tasks.c:41:6:freeRTOS_Tasks_Ini	16	static
-freeRTOS_tasks.c:83:6:vTask_Sync_Recieve_VCP	16	static
-freeRTOS_tasks.c:112:6:vTask_Queue_Data_Send	24	static
-freeRTOS_tasks.c:146:6:vTask_Queue_Data_Recieve	24	static
-freeRTOS_tasks.c:178:6:vTask_Transmit_VCP_2	24	static
-freeRTOS_tasks.c:193:6:vTask_Transmit_VCP	24	static
-freeRTOS_tasks.c:206:6:vTask_USB_Init	32	static
-freeRTOS_tasks.c:234:6:vTask_PCB_LED_Blink	24	static
+freeRTOS_tasks.c:40:6:freeRTOS_Tasks_Ini	16	static
+freeRTOS_tasks.c:85:6:vTask_SyncQueueISR_Data_Recieve	32	static
+freeRTOS_tasks.c:117:6:vTask_Sync_Recieve_VCP	16	static
+freeRTOS_tasks.c:146:6:vTask_Queue_Data_Send	24	static
+freeRTOS_tasks.c:180:6:vTask_Queue_Data_Recieve	24	static
+freeRTOS_tasks.c:212:6:vTask_Transmit_VCP_2	24	static
+freeRTOS_tasks.c:227:6:vTask_Transmit_VCP	24	static
+freeRTOS_tasks.c:240:6:vTask_USB_Init	32	static
+freeRTOS_tasks.c:268:6:vTask_PCB_LED_Blink	24	static

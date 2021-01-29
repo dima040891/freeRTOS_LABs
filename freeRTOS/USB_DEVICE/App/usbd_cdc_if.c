@@ -298,6 +298,10 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
   strncpy(VCP_Rx_Buf, (char*)Buf, *Len); // Копирование данных в пользовательский буфер из буфера HAL
   VCP_Rx_Buf[*Len] = 0; //Конец строки
 
+  xQueueSendToBackFromISR(xQueue1, VCP_Rx_Buf, &xHigherPriorityTaskWoken);
+
+
+
   USBD_CDC_ReceivePacket(&hUsbDeviceFS);
   return (USBD_OK);
   /* USER CODE END 6 */
