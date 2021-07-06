@@ -276,6 +276,7 @@ void vTask_PCB_LED_Blink(void *pvParameters)
 	vTaskDelay(*pDelay_LED / portTICK_RATE_MS ); // Разыменование т.е. передача значения задержки
 	PCB_LED_Toggle();
 	vTaskDelay(*(uint16_t*)pvParameters / portTICK_RATE_MS ); // Можно и без промежуточных переменных, привести pvParameters к указателю uint16_t "(uint16_t*)pvParameters", а затем разименовать
+
 	}
 	vTaskDelete(NULL);
 }
